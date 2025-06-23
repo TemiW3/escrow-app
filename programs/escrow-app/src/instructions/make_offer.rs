@@ -18,19 +18,26 @@ pub fn send_offered_tokens_to_escrow(ctx: &Context<MakeOffer>, token_a_offered_a
         &ctx.accounts.token_mint_a,
         &ctx.accounts.maker,
         &ctx.accounts.token_program,
-    );
-    Ok(())
+    )
 }
 
 pub fn save_offer(ctx: Context<MakeOffer>, id: u64, token_b_wanted_amount: u64) -> Result<()> {
-    let offer = &mut ctx.accounts.offer;
-    offer.id = id;
-    offer.maker = ctx.accounts.maker.key();
-    offer.token_mint_a = ctx.accounts.token_mint_a.key();
-    offer.token_mint_b = ctx.accounts.token_mint_b.key();
-    offer.token_b_wanted_amount = token_b_wanted_amount;
-    offer.bump = ctx.bumps.offer;
-
+    // let offer = &mut ctx.accounts.offer;
+    // offer.id = id;
+    // offer.maker = ctx.accounts.maker.key();
+    // offer.token_mint_a = ctx.accounts.token_mint_a.key();
+    // offer.token_mint_b = ctx.accounts.token_mint_b.key();
+    // offer.token_b_wanted_amount = token_b_wanted_amount;
+    // offer.bump = ctx.bumps.offer;
+    
+    ctx.accounts.offer.set_inner(Offer {
+        id,
+        maker: ctx.accounts.maker.key(),
+        token_mint_a: ctx.accounts.token_mint_a.key(),
+        token_mint_b: ctx.accounts.token_mint_b.key(),
+        token_b_wanted_amount,
+        bump: ctx.bumps.offer,
+    });
 
     Ok(())
 }
@@ -75,7 +82,7 @@ pub struct MakeOffer<'info> {
 
     pub system_program: Program<'info, System>,
     pub token_program: Interface<'info, TokenInterface>,
-    pub associated_token_program: Interface<'info, AssociatedToken>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
 }
 
 
