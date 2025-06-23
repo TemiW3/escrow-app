@@ -1,4 +1,4 @@
-use anchor_lang::{accounts, prelude::*};
+use anchor_lang::{prelude::*};
 use anchor_spl::{
     associated_token::AssociatedToken, 
     token_interface::{
@@ -11,7 +11,6 @@ use anchor_spl::{
         close_account}
 };
 
-use crate::ANCHOR_DISCRIMINATOR;
 use crate::state::Offer; 
 
 use super:: transfer_tokens;
@@ -28,7 +27,7 @@ pub fn transfer_tokens_to_maker(ctx: &Context<AcceptOffer>) -> Result<()> {
     )
 }
 
-pub fn withdraw_and_close_escrow(ctx: &Context<AcceptOffer>) -> Result<()> {
+pub fn withdraw_and_close_escrow(ctx: Context<AcceptOffer>) -> Result<()> {
     let seeds = &[
         b"offer",
         ctx.accounts.maker.to_account_info().key.as_ref(),
@@ -92,6 +91,7 @@ pub struct AcceptOffer<'info> {
     pub taker_token_account_a: Box<InterfaceAccount<'info, TokenAccount>>,
 
     #[account(
+        mut,
         associated_token::mint = token_mint_b,
         associated_token::authority = taker,
         associated_token::token_program = token_program,
@@ -114,15 +114,13 @@ pub struct AcceptOffer<'info> {
         has_one = token_mint_a,
         has_one = token_mint_b,
         seeds = [
-            ANCHOR_DISCRIMINATOR.as_bytes(),
             b"offer",
             maker.key().as_ref(),
-            id.to_le_bytes().as_ref(),
+            offer.id.to_le_bytes().as_ref(),
         ],
         bump = offer.bump,
-       
     )]
-    offer: Account<'info, Offer>,
+    pub offer: Account<'info, Offer>,
 
 
     #[account(
@@ -131,10 +129,10 @@ pub struct AcceptOffer<'info> {
         associated_token::authority = offer,
         associated_token::token_program = token_program,
     )]
-    vault: InterfaceAccount<'info, TokenAccount>,
+    pub vault: InterfaceAccount<'info, TokenAccount>,
 
     pub system_program: Program<'info, System>,
     pub token_program: Interface<'info, TokenInterface>,
-    pub associated_token: Program<'info, AssociatedToken>,
 
+    pub associated_token_program: Program<'info, AssociatedToken>,
 }

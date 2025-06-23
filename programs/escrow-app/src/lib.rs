@@ -22,10 +22,9 @@ pub mod escrow_app {
         instructions::make_offer::save_offer(ctx, id, token_b_wanted_amount)
     }
 
-    pub fn accept_offer(ctx: Context<AcceptOffer>, id: u64) -> Result<()> {
+    pub fn accept_offer(ctx: Context<AcceptOffer>) -> Result<()> {
         instructions::accept_offer::transfer_tokens_to_maker(&ctx)?;
-        instructions::accept_offer::withdraw_and_close_escrow(&ctx)
-
+        instructions::accept_offer::withdraw_and_close_escrow(ctx)
     }
 }
 
