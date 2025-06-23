@@ -15,7 +15,10 @@ declare_id!("GP2mZSjyRK3tX151UHENPLyHbTRqfz7dvYPrQpqJrHzv");
 pub mod escrow_app {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        initialize::handler(ctx)
+    pub fn make_offer(ctx: Context<MakeOffer>, id: u64, token_a_offered_amount: u64, token_b_wanted_amount: u64) -> Result<()> {
+        instructions::make_offer::send_offered_tokens_to_escrow(&ctx, token_a_offered_amount)?;
+        instructions::make_offer::save_offer(ctx, id, token_b_wanted_amount)
     }
 }
+
+
